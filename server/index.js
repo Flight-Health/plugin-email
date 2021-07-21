@@ -143,7 +143,7 @@ app.post('/flexflow', (req, res) => {
       const html = showdownConverter.makeHtml(req.body.Body);
       const msg = {
         to: attrs.pre_engagement_data.fromAddress,
-        from: process.env.FROM_ADDRESS,
+        from: attrs.pre_engagement_data.toAddress,
         subject: 'RE: ' + attrs.pre_engagement_data.subject,
         text: req.body.Body,
         html: html

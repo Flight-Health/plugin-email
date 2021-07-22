@@ -37,7 +37,7 @@ app.post('/inbound', multer().any(), (req, res) => {
   console.log('received inbound email');
 
   const email = req.body;
-  const practiceDomain = req.body.to.split('@')[1];
+  const practiceEmail = req.body.to.split('@')[1];
   const parsedHeaders = utils.getParsedHeaders(email.headers);
   const fromAddress = parsedHeaders.from.address;
   const fromName = parsedHeaders.from.name;
@@ -74,20 +74,20 @@ app.post('/inbound', multer().any(), (req, res) => {
 
   const threadID = fromAddress;
   const uniqueName = `${fromAddress}:${subject}`;
-
+  const practiceSubject = `${practiceEmail}:${subject}`;
   const channelArgs = {
     flexFlowSid: process.env.FLEX_FLOW_SID,
     identity: fromAddress,
     chatUniqueName: uniqueName,
     chatUserFriendlyName: fromAddress,
-    chatFriendlyName: subject,
+    chatFriendlyName: practiceSubject,
     target: uniqueName,
     preEngagementData: JSON.stringify({
       threadID,
       fromName,
       fromAddress,
       subject,
-      practiceDomain
+      practiceEmail
     })
   };
 
@@ -141,11 +141,10 @@ app.post('/flexflow', (req, res) => {
     getChannel(req.body.ChannelSid).then(channel => {
       const attrs = JSON.parse(channel.attributes);
       console.log('got channel attrs', attrs);
-      const agent_response = req.body.From + '@' + attrs.preEngagementData.practiceDomain;
       const html = showdownConverter.makeHtml(req.body.Body);
       const msg = {
         to: attrs.pre_engagement_data.fromAddress,
-        from: agent_response,
+        from: attrs.preEngagementData.practiceEmail,
         subject: 'RE: ' + attrs.pre_engagement_data.subject,
         text: req.body.Body,
         html: html

@@ -37,12 +37,12 @@ app.post('/inbound', multer().any(), (req, res) => {
   console.log('received inbound email');
 
   const email = req.body;
-  const practiceEmail = req.body.to;
+  const practiceEmail = req.body.to.split('@')[1];
   const parsedHeaders = utils.getParsedHeaders(email.headers);
   const fromAddress = parsedHeaders.from.address;
   const fromName = parsedHeaders.from.name;
 
-  const subject =  `${practiceEmail}:${parsedHeaders.subject.replace(/^(?:[rR][Ee][(\[]?\d?[\])]?:\s?)+/gm, '')}`;
+  const subject = parsedHeaders.subject.replace(/^(?:[rR][Ee][(\[]?\d?[\])]?:\s?)+/gm, '');
   let html = email.html;
   let markdown = email.text;
 
@@ -73,7 +73,7 @@ app.post('/inbound', multer().any(), (req, res) => {
   }
 
   const threadID = fromAddress;
-  const uniqueName = `${fromAddress}:${subject}`;
+  const uniqueName = `${practiceEmail}:${subject}`;
   const channelArgs = {
     flexFlowSid: process.env.FLEX_FLOW_SID,
     identity: fromAddress,

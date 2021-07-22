@@ -37,6 +37,7 @@ app.post('/inbound', multer().any(), (req, res) => {
   console.log('received inbound email');
 
   const email = req.body;
+  const practiceDomain = req.body.to.split('@')[1];
   const parsedHeaders = utils.getParsedHeaders(email.headers);
   const fromAddress = parsedHeaders.from.address;
   const fromName = parsedHeaders.from.name;
@@ -85,7 +86,8 @@ app.post('/inbound', multer().any(), (req, res) => {
       threadID,
       fromName,
       fromAddress,
-      subject
+      subject,
+      practiceDomain
     })
   };
 
@@ -142,7 +144,7 @@ app.post('/flexflow', (req, res) => {
 
       const html = showdownConverter.makeHtml(req.body.Body);
       const msg = {
-        to: attrs.pre_engagement_data.fromAddress,
+        to: process.env.FROM_ADDRESS,
         from: attrs.pre_engagement_data.toAddress,
         subject: 'RE: ' + attrs.pre_engagement_data.subject,
         text: req.body.Body,

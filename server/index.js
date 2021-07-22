@@ -141,11 +141,11 @@ app.post('/flexflow', (req, res) => {
     getChannel(req.body.ChannelSid).then(channel => {
       const attrs = JSON.parse(channel.attributes);
       console.log('got channel attrs', attrs);
-
+      const agent_response = req.body.From + '@' + attrs.preEngagementData.practiceDomain;
       const html = showdownConverter.makeHtml(req.body.Body);
       const msg = {
         to: attrs.pre_engagement_data.fromAddress,
-        from: process.env.FROM_ADDRESS,
+        from: agent_response,
         subject: 'RE: ' + attrs.pre_engagement_data.subject,
         text: req.body.Body,
         html: html

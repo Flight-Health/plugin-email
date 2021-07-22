@@ -42,7 +42,7 @@ app.post('/inbound', multer().any(), (req, res) => {
   const fromAddress = parsedHeaders.from.address;
   const fromName = parsedHeaders.from.name;
 
-  const subject = parsedHeaders.subject.replace(/^(?:[rR][Ee][(\[]?\d?[\])]?:\s?)+/gm, '');
+  const subject =  `${practiceEmail}:${parsedHeaders.subject.replace(/^(?:[rR][Ee][(\[]?\d?[\])]?:\s?)+/gm, '')}`;
   let html = email.html;
   let markdown = email.text;
 
@@ -74,13 +74,12 @@ app.post('/inbound', multer().any(), (req, res) => {
 
   const threadID = fromAddress;
   const uniqueName = `${fromAddress}:${subject}`;
-  const practiceSubject = `${practiceEmail}:${subject}`;
   const channelArgs = {
     flexFlowSid: process.env.FLEX_FLOW_SID,
     identity: fromAddress,
     chatUniqueName: uniqueName,
     chatUserFriendlyName: fromAddress,
-    chatFriendlyName: practiceSubject,
+    chatFriendlyName: subject,
     target: uniqueName,
     preEngagementData: JSON.stringify({
       threadID,

@@ -37,7 +37,7 @@ app.post('/inbound', multer().any(), (req, res) => {
   console.log('received inbound email');
 
   const email = req.body;
-  const practiceEmail = req.body.to.split('@')[1];
+  const practiceEmail = req.body.to;
   const parsedHeaders = utils.getParsedHeaders(email.headers);
   const fromAddress = parsedHeaders.from.address;
   const fromName = parsedHeaders.from.name;
@@ -78,7 +78,7 @@ app.post('/inbound', multer().any(), (req, res) => {
     flexFlowSid: process.env.FLEX_FLOW_SID,
     identity: fromAddress,
     chatUniqueName: uniqueName,
-    chatUserFriendlyName: fromAddress,
+    chatUserFriendlyName: uniqueName,
     chatFriendlyName: subject,
     target: uniqueName,
     preEngagementData: JSON.stringify({
@@ -143,12 +143,12 @@ app.post('/flexflow', (req, res) => {
       const html = showdownConverter.makeHtml(req.body.Body);
       const msg = {
         to: attrs.pre_engagement_data.fromAddress,
-        from: attrs.preEngagementData.practiceEmail,
+        from: attrs.pre_engagement_data.practiceEmail,
         subject: 'RE: ' + attrs.pre_engagement_data.subject,
         text: req.body.Body,
         html: html
       };
-
+      console.log('sending packet:', msg);
       sgMail.send(msg).then(e => {
         console.log('sent email', e);
       }).catch(e => {
